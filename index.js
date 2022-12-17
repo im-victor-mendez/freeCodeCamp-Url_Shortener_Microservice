@@ -22,12 +22,23 @@ app.get('/', function(req, res) {
 });
 
 app.post('/api/shorturl', async (req, res) => {
+  const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/
   const original_url = req.body.url
   
-  const url = new Url({ 'original_url': original_url })
-  await url.save()
+  if (!urlRegex.test(original_url)) res.json({ 'error': 'Invalid url' })
 
-  res.redirect(original_url)
+  else {
+    const url = new Url({ 'original_url': original_url })
+
+    try {
+      await url.save()
+      console.log('Url saved into database')
+    } catch {
+      console.error('Url already are in database')
+    }
+
+    res.redirect(original_url)
+  }
 })
 
 app.listen(port, function() {
