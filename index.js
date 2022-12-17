@@ -25,7 +25,7 @@ app.post('/api/shorturl', async (req, res) => {
   const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/
   const original_url = req.body.url
   
-  if (!urlRegex.test(original_url)) res.json({ 'error': 'Invalid url' })
+  if (!urlRegex.test(original_url)) res.json({ 'error': 'invalid url' })
 
   else {
     const url = new Url({ 'original_url': original_url })
@@ -38,6 +38,16 @@ app.post('/api/shorturl', async (req, res) => {
     }
 
     res.redirect(original_url)
+  }
+})
+
+app.get('/api/shorturl/:id_short_url', async (req, res) => {
+  try {
+    const url = await Url.findById(req.params.id_short_url)
+    const originalUrl = url.original_url
+    res.redirect(originalUrl)
+  } catch {
+    res.json({ 'error': 'invalid url' })
   }
 })
 
