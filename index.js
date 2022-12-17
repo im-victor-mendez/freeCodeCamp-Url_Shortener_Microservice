@@ -10,6 +10,9 @@ app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
+/* Connection to Database */
+require('./database.js')
+
 app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
