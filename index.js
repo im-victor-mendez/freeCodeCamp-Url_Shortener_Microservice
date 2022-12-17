@@ -7,20 +7,28 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(express.urlencoded({ extended: true }))
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
 /* Connection to Database */
-require('./database.js')
+const database = require('./database.js')
+
+/* Schemas */
+const Url = require('./models/Url.js');
 
 app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-// Your first API endpoint
-app.get('/api/hello', function(req, res) {
-  res.json({ greeting: 'hello API' });
-});
+app.post('/api/shorturl', async (req, res) => {
+  const original_url = req.body.url
+  
+  const url = new Url({ 'original_url': original_url })
+  await url.save()
+
+  res.redirect(original_url)
+})
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
