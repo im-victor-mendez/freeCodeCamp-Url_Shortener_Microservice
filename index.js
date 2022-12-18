@@ -28,7 +28,8 @@ app.post('/api/shorturl', async (req, res) => {
   if (!urlRegex.test(original_url)) res.json({ 'error': 'invalid url' })
 
   else {
-    const url = new Url({ 'original_url': original_url })
+    const url = new Url({ original_url })
+    const id = url._id
 
     try {
       await url.save()
@@ -36,8 +37,8 @@ app.post('/api/shorturl', async (req, res) => {
     } catch {
       console.error('Url already are in database')
     }
-
-    res.redirect(original_url)
+    
+    res.json({ original_url, 'short_url': id })
   }
 })
 
